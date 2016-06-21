@@ -336,30 +336,30 @@ function wplt_limit_tags_js() {
 			 * function disabletags()
 			 * this hides the tags button and disables the input when max tags is reached
 			 */
-			function disbaletags() {
-				$( "input.newtag" ).prop('disabled', true );
-				$( ".tagadd" ).css( 'visibility', 'hidden' );
-				$( ".tagcloud-link" ).css( 'visibility', 'hidden' );
-				$( ".the-tagcloud" ).css( 'visibility', 'hidden' );
+			function disbaletags(value) {
+				$(value).parent().find( "input.newtag" ).prop('disabled', true );
+				$(value).parent().find( ".tagadd" ).css( 'visibility', 'hidden' );
+				$(value).parent().find( ".tagcloud-link" ).css( 'visibility', 'hidden' );
+				$(value).parent().find( ".the-tagcloud" ).css( 'visibility', 'hidden' );
 			}
 			
 			/**
 			 * function disabletagsbutton()
 			 * this hides the tags button when max tags is reached
 			 */
-			function disabletagsbutton() {
-				$( ".tagadd" ).css( 'visibility', 'hidden' );
+			function disabletagsbutton(value) {
+				$(value).parent().find( ".tagadd" ).css( 'visibility', 'hidden' );
 			}
 			
 			/**
 			 * function showaddtagsbutton()
 			 * this shows the tags button and enables the input when below max tags
 			 */
-			function showaddtagsbutton() {
-				$( "input.newtag" ).prop('disabled', false );
-				$( ".tagadd" ).css( 'visibility', 'visible' );
-				$( ".tagcloud-link" ).css( 'visibility', 'visible' );
-				$( ".the-tagcloud" ).css( 'visibility', 'visible' );
+			function showaddtagsbutton(value) {
+				$(value).parent().find( "input.newtag" ).prop('disabled', false );
+				$(value).parent().find( ".tagadd" ).css( 'visibility', 'visible' );
+				$(value).parent().find( ".tagcloud-link" ).css( 'visibility', 'visible' );
+				$(value).parent().find( ".the-tagcloud" ).css( 'visibility', 'visible' );
 			}
 			
 			function disableenter() {
@@ -373,37 +373,70 @@ function wplt_limit_tags_js() {
 			 * we also count number of tags added to the input and disable if more than max tags
 			 */
 			$(document).ready( function() {
-				
-				$( '.tagchecklist' ).bind( "DOMSubtreeModified", function() {
+				$('.tagsdiv .howto').hide();
+				$( '.tagchecklist' ).each(function(index){
+					$(this).bind( "DOMSubtreeModified", function() {
+						var count = $(this).find("span").length;
+						/*console.log('Count: '+count);*/
+						if( count >= maxtags ) {
+							disbaletags($(this));
+						} else {
+							showaddtagsbutton($(this));
+						}
+					});
+				});
+				/*$( '.tagchecklist' ).bind( "DOMSubtreeModified", function() {
 					var count = $(".tagchecklist > span").length;
 					if( count >= maxtags ) {
-						disbaletags();
+						disbaletags($(this));
 					} else {
-						showaddtagsbutton();
+						showaddtagsbutton($(this));
 					}
-				});
+				});*/
 				
 				/* count tags as tying in input */
-				$( "input.newtag" ).bind("keyup keypress", function(e) {
+				$( "input.newtag" ).each(function(index){
+					$(this).bind("keyup keypress", function(e) {
 					
-					/* get teh number of tags the user has entered into the input box */
-					var tags = $( "input.newtag" ).val();					
-					var inputtedtags = tags.split( ',' ).length;
-					
-					/* get the number of tags already added */
-					var addedtags = $(".tagchecklist > span").length;
-					
-					/* work how many tags can be added now - based on the maxtags and the number already added */
-					var tagsleft = maxtags - addedtags;
-					
-					/* if the tags inputted are greater than maxtags or greater than tagsleft to add */
-					if( inputtedtags > maxtags || inputtedtags > tagsleft ) {
-						disabletagsbutton();
-						 e.preventDefault();
-					} else {
-						showaddtagsbutton();
-					}
+						/* get teh number of tags the user has entered into the input box */
+						var tags = $( this ).val();					
+						var inputtedtags = tags.split( ',' ).length;
+						
+						/* get the number of tags already added */
+						var addedtags = $(this).parent().find(".tagchecklist > span").length;
+						
+						/* work how many tags can be added now - based on the maxtags and the number already added */
+						var tagsleft = maxtags - addedtags;
+						
+						/* if the tags inputted are greater than maxtags or greater than tagsleft to add */
+						if( inputtedtags > maxtags || inputtedtags > tagsleft ) {
+							disabletagsbutton($(this));
+							 e.preventDefault();
+						} else {
+							showaddtagsbutton($(this));
+						}
+					});
 				});
+				// $( "input.newtag" ).bind("keyup keypress", function(e) {
+					
+				// 	/* get teh number of tags the user has entered into the input box */
+				// 	var tags = $( "input.newtag" ).val();					
+				// 	var inputtedtags = tags.split( ',' ).length;
+					
+				// 	/* get the number of tags already added */
+				// 	var addedtags = $(".tagchecklist > span").length;
+					
+				// 	/* work how many tags can be added now - based on the maxtags and the number already added */
+				// 	var tagsleft = maxtags - addedtags;
+					
+				// 	/* if the tags inputted are greater than maxtags or greater than tagsleft to add */
+				// 	if( inputtedtags > maxtags || inputtedtags > tagsleft ) {
+				// 		disabletagsbutton($(this));
+				// 		 e.preventDefault();
+				// 	} else {
+				// 		showaddtagsbutton($(this));
+				// 	}
+				// });
 				
 			});
 						
